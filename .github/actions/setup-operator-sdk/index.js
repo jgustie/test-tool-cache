@@ -9,7 +9,7 @@ try {
   if (!toolPath) {
     core.info(`Attempting to download ${versionSpec}...`);
     
-    let semver = '1.11.0
+    let semver = '1.11.0';
     let version = `v${semver}`;
     
     let os = process.platform;
