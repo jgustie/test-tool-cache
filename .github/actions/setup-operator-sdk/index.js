@@ -9,34 +9,7 @@ async function run() {
     const versionSpec = core.getInput('operator-sdk-version');
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
-      let os = process.platform;
-      let arch = process.arch;
-      if (arch == 'x64') {
-        arch = 'amd64';
-      }
-    
-      let version = '';
-      const octokit = new Octokit();
-      const releases = await octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
-      for (const release of releases.data) {
-        if (release.prerelease) {
-          continue;
-        }
-        if (versionSpec == 'latest' || semver.satisfies(version, versionSpec)) {
-          version = release.name;
-          break;
-        }
-      }
-      if (!version) {
-        throw new Error(`Unable to resolve version ${versionSpec}`);
-      }
-      
-      core.info(`Attempting to download ${version} (${os}/${arch})...`);
-      const downloadPath = await tc.downloadTool(`https://github.com/operator-framework/operator-sdk/releases/download/${version}/operator-sdk_${os}_${arch}`);
-      fs.chmodSync(downloadPath, 0o755);
-      
-      toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
-      core.info(`Successfully cached operator-sdk to ${toolPath}`);
+      toolPath = downloadOperatorSDK();
     } else {
       core.info(`Found in cache @ ${toolPath}`);
     }
@@ -46,6 +19,46 @@ async function run() {
   } catch (error) {
     core.setFailed(error.message);
   }
+}
+
+async function downloadOperatorSDK() {
+  let version = '';
+  let downloadURL = '';
+  let os = process.platform;
+  let arch = process.arch;
+  if (arch == 'x64') {
+    arch = 'amd64';
+  }
+  
+  const octokit = new Octokit();
+  const releases = await octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
+  for (const release of releases.data.filter(r => !r.prerelease)) {
+    if (versionSpec == 'latest' || semver.satisfies(version, versionSpec)) {
+      version = release.name;
+      for (const asset of release.assets) {
+        if (asset.name == `operator-sdk_${os}_${arch}`) {
+          core.info('FOUND: '+ JSON.stringify(asset));
+          downloadURL = asset.browser_download_url;
+        }
+      }
+      break;
+    }
+  }
+  
+  if (!version) {
+    throw new Error(`Unable to resolve version ${versionSpec}`);
+  }
+  if (!downloadURL) {
+    throw new Error(`Unable to find download for version ${version} (${os}/${arch})`);
+  }
+  
+  core.info(`Attempting to download ${version} (${os}/${arch})...`);
+  const downloadPath = await tc.downloadTool(downloadURL);
+  fs.chmodSync(downloadPath, 0o755);
+  
+  let toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
+  core.info(`Successfully cached operator-sdk to ${toolPath}`);
+  return toolPath;
 }
 
 run();
