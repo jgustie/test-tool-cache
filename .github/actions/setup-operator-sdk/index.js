@@ -52,7 +52,7 @@ async function downloadOperatorSDK(versionSpec) {
     throw new Error(`Unable to find download for version ${version} (${os}/${arch})`);
   }
   
-  if (!semver.valid(versionSpec)) {
+  if (version != versionSpec) {
     toolPath = tc.find('operatorSDK', version);
     if (toolPath) {
       core.info(`Found in cache @ ${toolPath}`);
