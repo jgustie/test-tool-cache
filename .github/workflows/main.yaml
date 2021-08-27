@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Operator SDK
-        uses: ./actions/setup-operator-sdk
+        uses: ./.github/actions/setup-operator-sdk
       - name: Check Operator SDK
         run: |
           operator-sdk --help
