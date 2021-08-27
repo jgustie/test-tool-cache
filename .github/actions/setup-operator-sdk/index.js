@@ -1,15 +1,14 @@
 const tc = require('@actions/tool-cache');
 const core = require('@actions/core');
-const github = require('@actions/github');
 const fs = require('fs');
-
+const { Octokit } = require('@octokit/rest')
 
 async function run() {
   try {
     const versionSpec = core.getInput('operator-sdk-version');
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
-      const octokit = github.getOctokit(process.env.GITHUB_TOKEN)
+      const octokit = new Octokit();
       const releases = octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
       core.info(JSON.stringify(releases));
       
