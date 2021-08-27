@@ -29,6 +29,7 @@ async function downloadOperatorSDK(versionSpec) {
   if (arch == 'x64') {
     arch = 'amd64';
   }
+  let toolPath = ''
   
   const octokit = new Octokit();
   const releases = await octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
@@ -51,11 +52,19 @@ async function downloadOperatorSDK(versionSpec) {
     throw new Error(`Unable to find download for version ${version} (${os}/${arch})`);
   }
   
+  if (!semver.valid(versionSpec)) {
+    toolPath = tc.find('operatorSDK', version);
+    if (toolPath) {
+      core.info(`Found in cache @ ${toolPath}`);
+      return toolPath;
+    }
+  }
+  
   core.info(`Attempting to download ${version} (${os}/${arch})...`);
   const downloadPath = await tc.downloadTool(downloadURL);
   fs.chmodSync(downloadPath, 0o755);
   
-  let toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
+  toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
   core.info(`Successfully cached operator-sdk to ${toolPath}`);
   return toolPath;
 }
