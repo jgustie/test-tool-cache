@@ -9,7 +9,7 @@ async function run() {
     const versionSpec = core.getInput('operator-sdk-version');
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
-      toolPath = downloadOperatorSDK();
+      toolPath = downloadOperatorSDK(versionSpec);
     } else {
       core.info(`Found in cache @ ${toolPath}`);
     }
@@ -21,7 +21,7 @@ async function run() {
   }
 }
 
-async function downloadOperatorSDK() {
+async function downloadOperatorSDK(versionSpec) {
   let version = '';
   let downloadURL = '';
   let os = process.platform;
