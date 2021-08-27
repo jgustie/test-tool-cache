@@ -1,12 +1,18 @@
 const tc = require('@actions/tool-cache');
 const core = require('@actions/core');
+const github = require('@actions/github');
 const fs = require('fs');
+
 
 async function run() {
   try {
     const versionSpec = core.getInput('operator-sdk-version');
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
+      const octokit = github.getOctokit('')
+      const releases = octokit.rest.repos.listReleases({'operator-framework', 'operator-sdk'});
+      core.info(JSON.stringify(releases));
+      
       // TODO Need to resolve versionSpec to version...
       let version = 'v1.11.0';
       
