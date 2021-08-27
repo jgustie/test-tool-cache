@@ -10,7 +10,7 @@ async function run() {
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
       const octokit = github.getOctokit('')
-      const releases = octokit.rest.repos.listReleases({'operator-framework', 'operator-sdk'});
+      const releases = octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
       core.info(JSON.stringify(releases));
       
       // TODO Need to resolve versionSpec to version...
