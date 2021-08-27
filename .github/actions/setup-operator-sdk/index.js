@@ -1,5 +1,6 @@
 const tc = require('@actions/tool-cache');
 const core = require('@actions/core');
+const fs = require('fs');
 
 async function run() {
   try {
@@ -20,6 +21,7 @@ async function run() {
       }
       
       const downloadPath = await tc.downloadTool(`https://github.com/operator-framework/operator-sdk/releases/download/${version}/operator-sdk_${os}_${arch}`);
+      fs.chmodSync(downloadPath, 0o755);
       
       toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
     }
