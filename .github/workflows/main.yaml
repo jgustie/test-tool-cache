@@ -1,0 +1,19 @@
+name: main
+on:
+  push:
+    branch:
+      - main
+
+jobs:
+
+  testing:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Operator SDK
+        users: ./actions/setup-operator-sdk
+      - name: Check Operator SDK
+        run: |
+          operator-sdk --help

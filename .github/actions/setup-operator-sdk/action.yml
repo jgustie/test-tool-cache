@@ -1,0 +1,9 @@
+name: 'Setup Operator SDK'
+description: 'Setup Operator SDK and add it to the PATH'
+inputs:
+  operator-sdk-version:
+    description: 'The Operator SDK version to download and use.'
+    default: 'latest'
+runs:
+  using: 'node12'
+  main: 'index.js'
