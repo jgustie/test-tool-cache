@@ -7,7 +7,7 @@ const semver = require('semver')
 async function run() {
   try {
     const versionSpec = core.getInput('operator-sdk-version');
-    let toolPath = tc.find('operatorSDK', versionSpec);
+    let toolPath = tc.find('operator-sdk', versionSpec);
     if (!toolPath) {
       toolPath = await downloadOperatorSDK(versionSpec);
     } else {
@@ -53,7 +53,7 @@ async function downloadOperatorSDK(versionSpec) {
   }
   
   if (version != versionSpec) {
-    toolPath = tc.find('operatorSDK', version);
+    toolPath = tc.find('operator-sdk', version);
     if (toolPath) {
       core.info(`Found in cache @ ${toolPath}`);
       return toolPath;
@@ -64,7 +64,7 @@ async function downloadOperatorSDK(versionSpec) {
   const downloadPath = await tc.downloadTool(downloadURL);
   fs.chmodSync(downloadPath, 0o755);
   
-  toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operatorSDK', version);
+  toolPath = await tc.cacheFile(downloadPath, 'operator-sdk', 'operator-sdk', version);
   core.info(`Successfully cached operator-sdk to ${toolPath}`);
   return toolPath;
 }
