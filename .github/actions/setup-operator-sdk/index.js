@@ -9,7 +9,7 @@ async function run() {
     const versionSpec = core.getInput('operator-sdk-version');
     let toolPath = tc.find('operatorSDK', versionSpec);
     if (!toolPath) {
-      const octokit = github.getOctokit('')
+      const octokit = github.getOctokit(process.env.GITHUB_TOKEN)
       const releases = octokit.rest.repos.listReleases({owner: 'operator-framework', repo: 'operator-sdk'});
       core.info(JSON.stringify(releases));
       
